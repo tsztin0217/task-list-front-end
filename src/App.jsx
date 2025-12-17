@@ -17,7 +17,7 @@ const TASKS = [
 
 const App = () => {
   const [taskData, setTaskData] = useState(TASKS);
-  
+
   const toggleComplete = (taskId) => {
     setTaskData(taskData.map(task => {
       if (task.id === taskId) {
@@ -43,7 +43,7 @@ const App = () => {
             tasks={taskData}
             onCompleteTask={toggleComplete}
             onDeleteTask={handleDelete}
-             />}</div>
+          />}</div>
       </main>
     </div>
   );
