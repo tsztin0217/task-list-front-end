@@ -8,7 +8,7 @@ const TaskList = ({ tasks, onCompleteTask, onDeleteTask }) => {
       return (
         <Task
           key={task.id}
-          id={task.id}
+          taskId={task.id}
           title={task.title}
           isComplete={task.isComplete}
           onCompleteTask={onCompleteTask}
