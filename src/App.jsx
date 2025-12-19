@@ -1,7 +1,62 @@
+// import { useState } from 'react';
+// import TaskList from './components/TaskList.jsx';
+// import './App.css';
+
+// // const TASKS = [
+// //   {
+// //     id: 1,
+// //     title: 'Mow the lawn',
+// //     isComplete: false,
+// //   },
+// //   {
+// //     id: 2,
+// //     title: 'Cook Pasta',
+// //     isComplete: true,
+// //   },
+// // ];
+
+// const App = () => {
+//   const [taskData, setTaskData] = useState(TASKS);
+
+//   const toggleComplete = (taskId) => {
+//     setTaskData(taskData.map(task => {
+//       if (task.id === taskId) {
+//         return { ...task, isComplete: !task.isComplete };
+//       }
+//       return task;
+//     }));
+//   };
+
+//   const handleDelete = (taskId) => {
+//     setTaskData(taskData.filter(task => task.id !== taskId));
+//   };
+
+
+//   return (
+//     <div className="App">
+//       <header className="App-header">
+//         <h1>Ada&apos;s Task List</h1>
+//       </header>
+//       <main>
+//         <div>{
+//           <TaskList
+//             tasks={taskData}
+//             onCompleteTask={toggleComplete}
+//             onDeleteTask={handleDelete}
+//           />}</div>
+//       </main>
+//     </div>
+//   );
+// };
+
+// export default App;
+
+
 import { useEffect, useState } from 'react';
 import TaskList from './components/TaskList.jsx';
 import './App.css';
 import axios from 'axios';
+import NewTaskForm from './components/NewTaskForm.jsx';
 
 
 const kbaseURL = 'http://localhost:5000';
@@ -38,8 +93,29 @@ const removeTaskAPI = taskId => {
     .catch(error => console.log(error));
 };
 
+const addNewTaskAPI = (taskData) => {
+  return axios.post(`${kbaseURL}/tasks`, {
+    title: taskData.title,
+    description: taskData.description
+  }).then(response => response.data.task);
+};
+
 const App = () => {
   const [taskData, setTaskData] = useState([]);
+
+  const onAddTask = (newTask) => {
+    return addNewTaskAPI(newTask)
+      .then((apiTask) => {
+        const createdTask = convertFromAPI(apiTask);
+        setTaskData(prevTaskData => [createdTask, ...prevTaskData]);
+      })
+      .catch(error => {
+        console.log(error);
+        if (error.response) {
+          console.log('API error:', error.response.status, error.response.data);
+        }
+      });
+  };
 
   const getAllTasks = () => {
     return getAllTasksAPI()
@@ -85,12 +161,15 @@ const App = () => {
         <h1>Ada&apos;s Task List</h1>
       </header>
       <main>
-        <div>{
+        <div>
           <TaskList
             tasks={taskData}
             onCompleteTask={toggleComplete}
             onDeleteTask={handleDelete}
-          />}</div>
+          />
+        </div>
+
+        <NewTaskForm onAddTask={onAddTask} />
       </main>
     </div>
   );
